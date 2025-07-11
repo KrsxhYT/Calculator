@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Loan/EMI Calculator</title>
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .converter {
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .row {
+      margin: 12px 0;
+    }
+    input {
+      background: #111;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 4px;
+      font-size: 16px;
+      padding: 8px;
+      width: 100%;
+    }
+    button {
+      background: #ff6900;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .result-box {
+      margin-top: 20px;
+      background: #111;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 18px;
+    }
+    .result-box p {
+      margin: 6px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="converter">
+    <h2>Loan / EMI Calculator</h2>
+    <div class="row"><input type="number" id="loanAmount" placeholder="Loan Amount (₹)"></div>
+    <div class="row"><input type="number" id="interestRate" placeholder="Annual Interest Rate (%)"></div>
+    <div class="row"><input type="number" id="loanTerm" placeholder="Loan Term (months)"></div>
+    <button onclick="calculateEMI()">Calculate</button>
+    <div class="result-box" id="resultBox"></div>
+  </div>
+  <button onclick="location.href='dashboard.html'">←</button>
+
+  <script>
+    function calculateEMI() {
+      const P = parseFloat(document.getElementById("loanAmount").value);
+      const annualRate = parseFloat(document.getElementById("interestRate").value);
+      const N = parseInt(document.getElementById("loanTerm").value);
+      const resultBox = document.getElementById("resultBox");
+
+      if (isNaN(P) || isNaN(annualRate) || isNaN(N) || P <= 0 || annualRate < 0 || N <= 0) {
+        resultBox.innerHTML = "<p>❗ Enter valid values.</p>";
+        return;
+      }
+
+      const R = annualRate / 12 / 100;
+      const EMI = (P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
+      const total = EMI * N;
+      const interest = total - P;
+
+      resultBox.innerHTML = `
+        <p><strong>Monthly EMI:</strong> ₹${EMI.toFixed(2)}</p>
+        <p><strong>Total Interest:</strong> ₹${interest.toFixed(2)}</p>
+        <p><strong>Total Payment:</strong> ₹${total.toFixed(2)}</p>
+      `;
+    }
+  </script>
+</body>
+</html>

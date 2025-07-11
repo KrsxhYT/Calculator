@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Length Converter</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      padding: 16px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #ff8800;
+      margin-top: 20px;
+      margin-bottom: 24px;
+      font-size: 24px;
+    }
+
+    .card {
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 100%;
+      box-shadow: 0 0 10px #000;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    select, input {
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 8px;
+      background: #2a2a2a;
+      color: #fff;
+      border: 1px solid #444;
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #ff8800;
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    button:active {
+      background: #ffaa00;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      background: #222;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 18px;
+      text-align: center;
+      color: #00e676;
+    }
+
+    .result-box p {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Length Converter</h2>
+    <div class="card">
+      <div class="form-group">
+        <select id="fromUnit"></select>
+        <input type="number" id="fromValue" placeholder="Enter value">
+        <select id="toUnit"></select>
+      </div>
+      <button onclick="convertLength()">Convert</button>
+      <div class="result-box" id="resultBox">Result will appear here</div>
+    </div>
+  </div>
+<button onclick="location.href='dashboard.html'" id="backBtn">← Back</button>
+
+  <script>
+    const units = {
+      "Fathom (ftm)": 1.8288, "Yard (yd)": 0.9144, "Foot (ft)": 0.3048, "Inch (in)": 0.0254,
+      "Gongli": 500.0, "Li": 500.0, "Zhang": 3.3333, "Chi": 0.3333, "Cun": 0.0333,
+      "Fen": 0.0033, "Lii": 0.0003, "Hao": 0.00003, "Parsec (pc)": 3.085677581491367e+16,
+      "Lunar Distance (ld)": 384400000, "Astronomical Unit (AU)": 1.496e+11,
+      "Light Year (ly)": 9.461e+15, "Kilometer (km)": 1000, "Meter (m)": 1,
+      "Decimeter (dm)": 0.1, "Centimeter (cm)": 0.01, "Millimeter (mm)": 0.001,
+      "Micrometer (µm)": 1e-6, "Nanometer (nm)": 1e-9, "Picometer (pm)": 1e-12,
+      "Nautical Mile (nmi)": 1852, "Mile (mi)": 1609.344, "Furlong (fur)": 201.168
+    };
+
+    const from = document.getElementById('fromUnit');
+    const to = document.getElementById('toUnit');
+    const val = document.getElementById('fromValue');
+    const resultBox = document.getElementById('resultBox');
+
+    for (let unit in units) {
+      from.add(new Option(unit, unit));
+      to.add(new Option(unit, unit));
+    }
+
+    from.value = "Meter (m)";
+    to.value = "Kilometer (km)";
+
+    function convertLength() {
+      const fromVal = parseFloat(val.value);
+      const fromUnitVal = units[from.value];
+      const toUnitVal = units[to.value];
+
+      if (isNaN(fromVal)) {
+        resultBox.innerHTML = "<p>Please enter a valid number.</p>";
+        return;
+      }
+
+      const meters = fromVal * fromUnitVal;
+      const result = meters / toUnitVal;
+
+      resultBox.innerHTML = `
+        <p><strong>${from.value}:</strong> ${fromVal}</p>
+        <p><strong>${to.value}:</strong> ${result.toLocaleString(undefined, { maximumFractionDigits: 6 })}</p>
+      `;
+    }
+  </script>
+</body>
+</html>

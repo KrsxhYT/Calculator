@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multi Calculator — Dashboard</title>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --bg2: rgba(32,32,32,0.8);
+      --fg: #fff;
+      --accent: #ff6700;
+      --glass: rgba(255, 255, 255, 0.05);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Segoe UI', sans-serif;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      backdrop-filter: blur(5px);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: var(--glass);
+      border-radius: 14px;
+      border: 1px solid #222;
+      box-shadow: 0 0 8px rgba(255,255,255,0.03);
+      flex-wrap: wrap;
+    }
+    header h1 {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    #clock, #userCount {
+      font-size: 1rem;
+      color: #ccc;
+    }
+    .about-btn {
+      background: var(--accent);
+      color: #000;
+      padding: 7px 14px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+    .about-btn:hover {
+      background: #ffa94d;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      flex: 1;
+    }
+    .tool-btn {
+      background: var(--bg2);
+      padding: 20px 14px;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 1rem;
+      color: var(--fg);
+      border: 1px solid #2a2a2a;
+      cursor: pointer;
+      transition: 0.25s ease;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .tool-btn:hover {
+      background: var(--accent);
+      color: #000;
+      transform: translateY(-2px);
+    }
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #888;
+      font-size: 0.85rem;
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Multi Calculator</h1>
+    <div class="top-right">
+      <div id="clock">--:--:--</div>
+      <div id="userCount">Users: 2567</div>
+      <a href="About.html" class="about-btn">About Us</a>
+    </div>
+  </header>
+
+  <div class="grid">
+    <a href="Age.html" class="tool-btn">Age Calculator</a>
+    <a href="Area.html" class="tool-btn">Area</a>
+    <a href="BMI.html" class="tool-btn">BMI</a>
+    <a href="Currency.html" class="tool-btn">Currency</a>
+    <a href="Data.html" class="tool-btn">Data</a>
+    <a href="Discount.html" class="tool-btn">Discount</a>
+    <a href="Fuel.html" class="tool-btn">Fuel</a>
+    <a href="Length.html" class="tool-btn">Length</a>
+    <a href="Loan.html" class="tool-btn">Loan</a>
+    <a href="Normal.html" class="tool-btn">Normal Calc</a>
+    <a href="Number.html" class="tool-btn">Number System</a>
+    <a href="Speed.html" class="tool-btn">Speed</a>
+    <a href="Time.html" class="tool-btn">Time</a>
+    <a href="Temprature.html" class="tool-btn">Temperature</a>
+    <a href="Tip.html" class="tool-btn">Tip</a>
+    <a href="Volume.html" class="tool-btn">Volume</a>
+  </div>
+
+  <footer>
+    Powered by Krsxh<br>
+    © 2025 Multi Calculator. All rights reserved.
+  </footer>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Simulate user count logic (localStorage based)
+    let base = 2567;
+    if (!localStorage.getItem("mc_user_logged")) {
+      base++;
+      localStorage.setItem("mc_user_logged", "true");
+      localStorage.setItem("mc_user_count", base);
+    } else {
+      base = parseInt(localStorage.getItem("mc_user_count")) || 2567;
+    }
+    document.getElementById('userCount').textContent = `Users: ${base}`;
+  </script>
+</body>
+</html>

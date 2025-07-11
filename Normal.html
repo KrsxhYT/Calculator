@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Standard Calculator — Krsxh</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      background: #1f1f1f;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    header button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    header h1 {
+      flex: 1;
+      text-align: center;
+      font-size: 1.1rem;
+      color: #ff6700;
+    }
+
+    .calc-container {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 360px;
+      margin: 40px auto;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+    }
+
+    #display {
+      background: #000;
+      color: #fff;
+      font-size: 2.2rem;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: right;
+      margin-bottom: 20px;
+      border: 1px solid #333;
+      min-height: 56px;
+      word-wrap: break-word;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    button {
+      padding: 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 14px;
+      background: #292929;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #ff6f00;
+      color: #000;
+    }
+
+    button.operator {
+      background: #393939;
+    }
+
+    button.equal {
+      background: #ff6f00;
+      color: #000;
+      grid-column: span 2;
+    }
+
+    button.clear {
+      background: #c62828;
+    }
+
+    button.zero {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 400px) {
+      #display { font-size: 1.8rem; padding: 12px; }
+      button { font-size: 16px; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button onclick="location.href='dashboard.html'">←</button>
+    <h1>Standard Calculator</h1>
+  </header>
+
+  <div class="calc-container">
+    <div id="display">0</div>
+    <div class="buttons">
+      <button class="clear">C</button>
+      <button class="operator">/</button>
+      <button class="operator">*</button>
+      <button class="operator">-</button>
+
+      <button>7</button>
+      <button>8</button>
+      <button>9</button>
+      <button class="operator">+</button>
+
+      <button>4</button>
+      <button>5</button>
+      <button>6</button>
+      <button class="equal">=</button>
+
+      <button>1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>.</button>
+
+      <button class="zero">0</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const buttons = document.querySelectorAll('.buttons button');
+    let current = '';
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.textContent;
+
+        if (val === 'C') {
+          current = '';
+          display.textContent = '0';
+        } else if (val === '=') {
+          try {
+            current = eval(current).toString();
+            display.textContent = current;
+          } catch {
+            display.textContent = 'Error';
+            current = '';
+          }
+        } else {
+          current += val;
+          display.textContent = current;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

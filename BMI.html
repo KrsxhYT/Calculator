@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BMI Calculator</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 16px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #ff8800;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .converter {
+      max-width: 500px;
+      margin: auto;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 10px #000;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    select, input {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      background: #2a2a2a;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #ff8800;
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    button:active {
+      background: #ffaa00;
+    }
+
+    #bmiPopup {
+      position: fixed;
+      bottom: -100%;
+      left: 0;
+      width: 100%;
+      background: #1e1e1e;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      text-align: center;
+      transition: bottom 0.3s ease-in-out;
+      z-index: 1000;
+    }
+
+    #bmiPopup.active {
+      bottom: 0;
+    }
+
+    #bmiPopup h3 {
+      color: #ff8800;
+      margin-bottom: 10px;
+    }
+
+    #bmiPopup p {
+      font-size: 18px;
+      margin: 6px 0;
+    }
+
+    .closeBtn {
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      margin-top: 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>BMI Calculator</h2>
+  <div class="converter">
+    <div class="row">
+      <select id="weightUnit">
+        <option value="kg">Kilograms (kg)</option>
+        <option value="lb">Pounds (lb)</option>
+      </select>
+      <input type="number" id="weight" placeholder="Weight">
+    </div>
+    <div class="row">
+      <select id="heightUnit">
+        <option value="m">Meters (m)</option>
+        <option value="cm">Centimeters (cm)</option>
+        <option value="ftin">Feet/Inches (ft/in)</option>
+      </select>
+    </div>
+    <div class="row" id="heightInputWrapper">
+      <input type="number" id="height" placeholder="Height">
+    </div>
+    <button id="calculate">Calculate BMI</button>
+  </div>
+
+  <div id="bmiPopup">
+    <h3>Your BMI Result</h3>
+    <p id="bmiValue">BMI: —</p>
+    <p id="bmiCategory">Category: —</p>
+    <button class="closeBtn" onclick="hidePopup()">Close</button>
+  </div>
+  <button onclick="location.href='dashboard.html'">←</button>
+
+  <script>
+    const weight = document.getElementById('weight');
+    const heightUnit = document.getElementById('heightUnit');
+    const heightInputWrapper = document.getElementById('heightInputWrapper');
+    const calculateBtn = document.getElementById('calculate');
+
+    const popup = document.getElementById('bmiPopup');
+    const bmiValue = document.getElementById('bmiValue');
+    const bmiCategory = document.getElementById('bmiCategory');
+
+    heightUnit.addEventListener('change', () => {
+      if (heightUnit.value === 'ftin') {
+        heightInputWrapper.innerHTML = `
+          <input type="number" id="heightFeet" placeholder="Feet" style="width:48%; margin-right:4%;">
+          <input type="number" id="heightInch" placeholder="Inches" style="width:48%;">`;
+      } else {
+        heightInputWrapper.innerHTML = `<input type="number" id="height" placeholder="Height">`;
+      }
+    });
+
+    function computeBMI(w, h_m) {
+      return w / (h_m * h_m);
+    }
+
+    calculateBtn.onclick = () => {
+      const wUnit = document.getElementById('weightUnit').value;
+      let w = parseFloat(weight.value);
+      if (isNaN(w) || w <= 0) {
+        alert("⚠️ Enter a valid weight!"); return;
+      }
+      if (wUnit === 'lb') w = w * 0.453592;
+
+      let h_m;
+      if (heightUnit.value === 'cm') {
+        const h = parseFloat(document.getElementById('height').value);
+        if (isNaN(h) || h <= 0) {
+          alert("⚠️ Enter a valid height!"); return;
+        }
+        h_m = h / 100;
+      } else if (heightUnit.value === 'm') {
+        h_m = parseFloat(document.getElementById('height').value);
+        if (isNaN(h_m) || h_m <= 0) {
+          alert("⚠️ Enter a valid height!"); return;
+        }
+      } else {
+        const ft = parseFloat(document.getElementById('heightFeet')?.value);
+        const inch = parseFloat(document.getElementById('heightInch')?.value);
+        if (isNaN(ft) || isNaN(inch) || ft < 0 || inch < 0) {
+          alert("⚠️ Enter valid feet & inches!"); return;
+        }
+        const totalInches = ft * 12 + inch;
+        h_m = totalInches * 0.0254;
+      }
+
+      const bmi = computeBMI(w, h_m);
+      const bis = bmi.toFixed(1);
+      let cat = '';
+      if (bmi < 18.5) cat = 'Underweight';
+      else if (bmi < 25) cat = 'Normal weight';
+      else if (bmi < 30) cat = 'Overweight';
+      else cat = 'Obesity';
+
+      bmiValue.textContent = `BMI: ${bis}`;
+      bmiCategory.textContent = `Category: ${cat}`;
+      popup.classList.add("active");
+    };
+
+    function hidePopup() {
+      popup.classList.remove("active");
+    }
+  </script>
+</body>
+</html>

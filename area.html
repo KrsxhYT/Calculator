@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Area Converter — Krsxh</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --bg2: #1f1f1f;
+      --fg: #fff;
+      --accent: #ff6700;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      background: var(--bg2);
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+    }
+    header button {
+      background: none;
+      border: none;
+      color: var(--fg);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    header h1 {
+      flex: 1;
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+    .converter {
+      width: 100%;
+      max-width: 360px;
+      margin: 30px auto;
+      background: var(--bg2);
+      padding: 20px;
+      border-radius: 12px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 400;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0;
+    }
+    select, input {
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      padding: 12px;
+      width: 48%;
+    }
+    #result {
+      background: #222;
+      padding: 12px;
+      width: 48%;
+      text-align: right;
+      border-radius: 8px;
+      font-size: 20px;
+    }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 14px 0;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button onclick="location.href='dashboard.html'">←</button>
+    <h1>Area Converter</h1>
+  </header>
+
+  <div class="converter">
+    <div class="row">
+      <select id="unitFrom"></select>
+      <input type="number" id="valueFrom" placeholder="Enter value">
+    </div>
+    <div class="row">
+      <select id="unitTo"></select>
+      <div id="result">0</div>
+    </div>
+    <button id="swap">🔁 Swap</button>
+  </div>
+
+  <script>
+    const units = {
+      'acre (ac)': 4046.8564224,
+      'square mile (mi²)': 2589988.110336,
+      'square yard (yd²)': 0.83612736,
+      'square foot (ft²)': 0.09290304,
+      'square inch (in²)': 0.00064516,
+      'square rod (rd²)': 25.29285264,
+      'qing (qing)': 6666.6667 * 10000,
+      'mu (mu)': 666.6667,
+      'square chi (chi²)': 0.111,
+      'square cun (cun²)': 0.00111,
+      'square kilometer (km²)': 1000000,
+      'hectare (ha)': 10000,
+      'are (a)': 100,
+      'square meter (m²)': 1,
+      'square decimeter (dm²)': 0.01,
+      'square centimeter (cm²)': 0.0001,
+      'square millimeter (mm²)': 1e-6,
+      'square micron (µm²)': 1e-12
+    };
+
+    const from = document.getElementById('unitFrom');
+    const to = document.getElementById('unitTo');
+    const val = document.getElementById('valueFrom');
+    const result = document.getElementById('result');
+    const swap = document.getElementById('swap');
+
+    Object.keys(units).forEach(u => {
+      from.add(new Option(u, u));
+      to.add(new Option(u, u));
+    });
+    from.value = 'square meter (m²)';
+    to.value = 'acre (ac)';
+
+    function convert() {
+      const v = parseFloat(val.value);
+      if (isNaN(v)) {
+        result.textContent = '0';
+        return;
+      }
+      const m2 = v * units[from.value];
+      const conv = m2 / units[to.value];
+      result.textContent = conv.toLocaleString(undefined, { maximumFractionDigits: 6 });
+    }
+
+    val.addEventListener('input', convert);
+    from.addEventListener('change', convert);
+    to.addEventListener('change', convert);
+    swap.addEventListener('click', () => {
+      const u = from.value;
+      from.value = to.value;
+      to.value = u;
+      convert();
+    });
+
+    convert();
+  </script>
+</body>
+</html>

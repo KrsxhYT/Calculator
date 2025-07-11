@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Age Calculator — Krsxh</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --bg2: #1f1f1f;
+      --fg: #EEE;
+      --accent: #FF6700;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--fg);
+      font-family: sans-serif; min-height: 100vh;
+    }
+    header {
+      display: flex; align-items: center;
+      background: var(--bg2); padding: 12px;
+      position: sticky; top: 0;
+    }
+    header h1 { flex:1; text-align:center; font-size:1.2rem; }
+    header button {
+      background:none; border:none; color:var(--fg);
+      font-size:1.2rem; cursor:pointer;
+    }
+    main { padding: 16px; }
+    .form-group { margin-bottom:16px; }
+    .form-group label {
+      color:#AAA; display:block; margin-bottom:6px;
+    }
+    input[type="date"] {
+      width:100%; padding:12px; border:none;
+      border-radius:6px; background:var(--bg2);
+      color:var(--fg);
+    }
+    .btn-primary {
+      width:100%; padding:14px;
+      background:var(--accent); color:#FFF;
+      border:none; border-radius:6px;
+      font-size:1rem; cursor:pointer;
+      margin-bottom:20px;
+    }
+    .card {
+      background:var(--bg2); padding:16px;
+      border-radius:8px;
+    }
+    .hidden { display:none; }
+    .row {
+      display:flex; gap:16px; margin-bottom:20px;
+    }
+    .col { flex:1; text-align:center; }
+    .label { color:#AAA; font-size:0.9rem; margin-bottom:8px; }
+    .big { font-size:2rem; font-weight:bold; color:#FFF; }
+    .sub { color:#DDD; font-size:0.9rem; }
+    .summary .title {
+      font-size:1.1rem; color:var(--accent);
+      margin-bottom:12px;
+    }
+    .grid {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+    .grid div {
+      background:var(--bg); padding:12px;
+      border-radius:4px; text-align:center;
+    }
+    .grid span {
+      font-weight:bold; font-size:1.2rem;
+      display:block; color:#FFF;
+    }
+    .grid small { color:#DDD; }
+    .actions {
+      display:flex; gap:12px; margin-top:16px;
+    }
+    .actions button {
+      flex:1; padding:12px;
+      border:none; border-radius:6px;
+      cursor:pointer; color:#FFF;
+    }
+    #btn-calendar { background:#555; }
+    #btn-share { background:var(--accent); }
+  </style>
+</head>
+<body>
+  <header>
+    <button onclick="location.href='dashboard.html'"></button>
+    <h1>Age</h1>
+  </header>
+  <main>
+    <div class="form-group">
+      <label>Date of birth</label>
+      <input type="date" id="dob" />
+    </div>
+    <div class="form-group">
+      <label>Today</label>
+      <input type="date" id="today" />
+    </div>
+    <button id="btn-calc" class="btn-primary">Calculate Age</button>
+    <div id="result-card" class="card hidden">
+      <div class="row">
+        <div class="col">
+          <div class="label">Age</div>
+          <div class="big" id="out-age"></div>
+          <div class="sub" id="out-age-monthdays"></div>
+        </div>
+        <div class="col">
+          <div class="label">Next birthday</div>
+          <div class="big" id="out-next-day"></div>
+          <div class="sub" id="out-next-countdown"></div>
+        </div>
+      </div>
+      <div class="summary">
+        <div class="title">Summary</div>
+        <div class="grid">
+          <div><span id="sum-years"></span><small>Years</small></div>
+          <div><span id="sum-months"></span><small>Months</small></div>
+          <div><span id="sum-weeks"></span><small>Weeks</small></div>
+          <div><span id="sum-days"></span><small>Days</small></div>
+          <div><span id="sum-hours"></span><small>Hours</small></div>
+          <div><span id="sum-minutes"></span><small>Minutes</small></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="btn-calendar">Add to Calendar</button>
+        <button id="btn-share">Share</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const dob = document.getElementById('dob'),
+          today = document.getElementById('today'),
+          btnCalc = document.getElementById('btn-calc'),
+          card = document.getElementById('result-card'),
+          outAge = document.getElementById('out-age'),
+          outAgeMonthDays = document.getElementById('out-age-monthdays'),
+          outNextDay = document.getElementById('out-next-day'),
+          outNextCount = document.getElementById('out-next-countdown'),
+          sumYears = document.getElementById('sum-years'),
+          sumMonths = document.getElementById('sum-months'),
+          sumWeeks = document.getElementById('sum-weeks'),
+          sumDays = document.getElementById('sum-days'),
+          sumHours = document.getElementById('sum-hours'),
+          sumMinutes = document.getElementById('sum-minutes'),
+          btnCalendar = document.getElementById('btn-calendar'),
+          btnShare = document.getElementById('btn-share'),
+          btnBack = document.getElementById('btn-back');
+
+    today.valueAsDate = new Date();
+
+    btnCalc.onclick = () => {
+      const d1 = new Date(dob.value);
+      const d2 = new Date(today.value);
+      if (!dob.value) return alert('Pick your birth date 📅.');
+      if (d1 > d2) return alert('DOB cannot be in future.');
+
+      let years = d2.getFullYear() - d1.getFullYear(),
+          m = d2.getMonth() - d1.getMonth(),
+          day = d2.getDate() - d1.getDate();
+      if (day < 0) {
+        m--;
+        let prev = new Date(d2.getFullYear(), d2.getMonth(), 0);
+        day += prev.getDate();
+      }
+      if (m < 0) { years--; m += 12; }
+
+      outAge.textContent = `${years} years`;
+      outAgeMonthDays.textContent = `${m} months | ${day} days`;
+
+      let nb = new Date(d2.getFullYear(), d1.getMonth(), d1.getDate());
+      if (nb <= d2) nb.setFullYear(nb.getFullYear() + 1);
+      const diff = nb - d2;
+      const md = Math.floor(diff / (1000 * 60 * 60 * 24));
+      outNextDay.textContent = nb.toLocaleDateString(undefined, {
+        weekday: 'long', year:'numeric', month: 'short', day:'numeric'
+      });
+      const mleft = Math.floor(md / 30), dleft = md % 30;
+      outNextCount.textContent = `${mleft} months | ${dleft} days`;
+
+      const totalDays = Math.floor((d2 - d1) / (1000*60*60*24));
+      sumYears.textContent = years;
+      sumMonths.textContent = Math.floor(totalDays/30);
+      sumWeeks.textContent = Math.floor(totalDays/7);
+      sumDays.textContent = totalDays;
+      sumHours.textContent = totalDays * 24;
+      sumMinutes.textContent = totalDays * 24 * 60;
+
+      card.classList.remove('hidden');
+    };
+
+    btnCalendar.onclick = () => {
+      if (!dob.value) return alert('Calculate first');
+      const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=Birthday&dates=${
+        dob.value.replace(/-/g,'')}T000000Z/${dob.value.replace(/-/g,'')}T010000Z`;
+      window.open(url, '_blank');
+    };
+
+    btnShare.onclick = () => {
+      const text = `🎉 I am currently ${outAge.textContent} old (${outAgeMonthDays.textContent} extra).
+📆 My next birthday falls on ${outNextDay.textContent} and it's just ${outNextCount.textContent} away!
+
+🕒 Summary:
+- Years: ${sumYears.textContent}
+- Months: ${sumMonths.textContent}
+- Weeks: ${sumWeeks.textContent}
+- Days: ${sumDays.textContent}
+- Hours: ${sumHours.textContent}
+- Minutes: ${sumMinutes.textContent}`;
+      
+      if (navigator.share) {
+        navigator.share({ title: "My Age Summary", text }).catch(console.error);
+      } else {
+        copyText(text);
+      }
+    };
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt)
+        .then(() => alert('Copied to clipboard!'))
+        .catch(() => prompt('Copy manually:', txt));
+    }
+
+    btnBack.onclick = () => history.back();
+  </script>
+</body>
+</html>

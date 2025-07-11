@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Numeral System Converter</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      background: #1f1f1f;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    header h1 {
+      flex: 1;
+      text-align: center;
+      font-size: 1.1rem;
+      color: #ff6700;
+    }
+
+    .converter {
+      width: 100%;
+      max-width: 360px;
+      background: #1e1e1e;
+      padding: 20px;
+      margin: 40px auto;
+      border-radius: 16px;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0;
+    }
+
+    select, input {
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      padding: 12px;
+      width: 48%;
+    }
+
+    input::placeholder {
+      color: #aaa;
+    }
+
+    button.convert-btn {
+      width: 100%;
+      background: #ff6f00;
+      color: #000;
+      border: none;
+      padding: 14px;
+      font-size: 17px;
+      font-weight: 500;
+      border-radius: 12px;
+      margin-top: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button.convert-btn:hover {
+      opacity: 0.9;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      background: #222;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 17px;
+    }
+
+    .result-box p {
+      margin: 6px 0;
+      border-bottom: 1px solid #333;
+      padding-bottom: 4px;
+    }
+
+    @media (max-width: 400px) {
+      input, select { padding: 10px; font-size: 15px; }
+      button.convert-btn { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button onclick="location.href='dashboard.html'">←</button>
+    <h1>Numeral Converter</h1>
+  </header>
+
+  <div class="converter">
+    <h2>Convert Numbers</h2>
+    <div class="row">
+      <select id="fromBase">
+        <option value="2">BIN</option>
+        <option value="8">OCT</option>
+        <option value="10" selected>DEC</option>
+        <option value="16">HEX</option>
+      </select>
+      <input type="text" id="fromValue" placeholder="Enter value" />
+    </div>
+    <div class="row">
+      <select id="toBase">
+        <option value="2">BIN</option>
+        <option value="8">OCT</option>
+        <option value="10">DEC</option>
+        <option value="16">HEX</option>
+      </select>
+      <div style="width:48%;"></div>
+    </div>
+    <button class="convert-btn" onclick="convert()">Convert</button>
+    <div class="result-box" id="resultBox"></div>
+  </div>
+
+  <script>
+    const input = document.getElementById('fromValue');
+    const fromSelect = document.getElementById('fromBase');
+    const resultBox = document.getElementById('resultBox');
+
+    function validateInput(base) {
+      input.value = input.value.toUpperCase();
+      const val = input.value;
+      let pattern = /.*/;
+
+      if (base == 2) pattern = /^[0-1]*$/;
+      else if (base == 8) pattern = /^[0-7]*$/;
+      else if (base == 10) pattern = /^[0-9]*$/;
+      else if (base == 16) pattern = /^[0-9A-F]*$/;
+
+      if (!pattern.test(val)) {
+        input.value = val.slice(0, -1);
+      }
+    }
+
+    fromSelect.addEventListener('change', () => {
+      input.value = "";
+      resultBox.innerHTML = "";
+    });
+
+    input.addEventListener('input', () => validateInput(fromSelect.value));
+
+    function convert() {
+      const fromBase = parseInt(document.getElementById('fromBase').value);
+      const toBase = parseInt(document.getElementById('toBase').value);
+      const fromVal = input.value.trim();
+
+      try {
+        const parsed = parseInt(fromVal, fromBase);
+        if (isNaN(parsed)) throw new Error("Invalid input");
+
+        const result = parsed.toString(toBase).toUpperCase();
+        const fromLabel = fromSelect.options[fromSelect.selectedIndex].text;
+        const toLabel = document.getElementById('toBase').options[document.getElementById('toBase').selectedIndex].text;
+
+        resultBox.innerHTML = `
+          <p><strong>${fromLabel}:</strong> ${fromVal}</p>
+          <p><strong>${toLabel}:</strong> ${result}</p>
+        `;
+      } catch {
+        resultBox.innerHTML = "<p>❌ Invalid input for selected base.</p>";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Currency Converter</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 100%;
+      padding: 16px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #ff8800;
+      font-size: 24px;
+      margin-top: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 10px #000;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    select, input {
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 8px;
+      background: #2a2a2a;
+      color: #fff;
+      border: 1px solid #444;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #ff8800;
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    button:active {
+      background: #ffaa00;
+    }
+
+    #result {
+      margin-top: 24px;
+      font-size: 18px;
+      text-align: center;
+      color: #00e676;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Currency Converter</h2>
+    <div class="card">
+      <div class="form-group">
+        <select id="from"></select>
+        <select id="to"></select>
+        <input type="number" id="amount" placeholder="Enter amount" />
+      </div>
+      <button onclick="convert()">Convert</button>
+      <div id="result">Result will appear here</div>
+    </div>
+  </div>
+  <button onclick="location.href='dashboard.html'" id="backBtn">← Back</button>
+
+  <script>
+    const currencies = {
+      USD: "United States dollar", EUR: "Euro", JPY: "Japanese yen", AFN: "Afghan afghani",
+      DZD: "Algerian dinar", ARS: "Argentine peso", AUD: "Australian dollar", AZN: "Azerbaijani manat",
+      BSD: "Bahamian dollar", BHD: "Bahraini dinar", BDT: "Bangladeshi taka", BBD: "Barbadian dollar",
+      BYN: "Belarusian ruble", BMD: "Bermudian dollar", BTN: "Bhutanese ngultrum", BOB: "Bolivian boliviano",
+      BWP: "Botswana pula", BRL: "Brazilian real", GBP: "British pound", BND: "Brunei dollar",
+      BGN: "Bulgarian lev", MMK: "Burmese kyat", KHR: "Cambodian riel", CAD: "Canadian dollar",
+      CLP: "Chilean peso", CNY: "Chinese yuan", COP: "Colombian peso", CDF: "Congolese franc",
+      CRC: "Costa Rican colón", HRK: "Croatian kuna", CZK: "Czech koruna", DKK: "Danish krone",
+      EGP: "Egyptian pound", ETB: "Ethiopian birr", FJD: "Fijian dollar", GEL: "Georgian lari",
+      GHS: "Ghanaian cedi", GNF: "Guinean franc", HKD: "Hong Kong dollar", HUF: "Hungarian forint",
+      ISK: "Icelandic króna", INR: "Indian rupee", IDR: "Indonesian rupiah", IRR: "Iranian rial",
+      IQD: "Iraqi dinar", ILS: "Israeli new shekel", JMD: "Jamaican dollar", JOD: "Jordanian dinar",
+      KZT: "Kazakhstani tenge", KES: "Kenyan shilling", KWD: "Kuwaiti dinar", KGS: "Kyrgyzstani som",
+      LAK: "Lao kip", LBP: "Lebanese pound", LRD: "Liberian dollar", LYD: "Libyan dinar",
+      MOP: "Macanese pataca", MYR: "Malaysian ringgit", MVR: "Maldivian rufiyaa", MUR: "Mauritian rupee",
+      MXN: "Mexican peso", MDL: "Moldovan Leu", MNT: "Mongolian tögrög", MAD: "Moroccan dirham",
+      NAD: "Namibian dollar", NPR: "Nepalese rupee", TWD: "New Taiwan dollar", NZD: "New Zealand dollar",
+      NGN: "Nigerian naira", NOK: "Norwegian krone", CNH: "Offshore RMB", OMR: "Omani rial",
+      PKR: "Pakistani rupee", PYG: "Paraguayan guaraní", PEN: "Peruvian sol", PHP: "Philippine peso",
+      PLN: "Polish złoty", QAR: "Qatari riyal", RON: "Romanian leu", RUB: "Russian ruble",
+      SAR: "Saudi riyal", RSD: "Serbian dinar", SCR: "Seychellois rupee", SGD: "Singapore dollar",
+      ZAR: "South African rand", KRW: "South Korean won", LKR: "Sri Lankan rupee", SDG: "Sudanese pound",
+      SEK: "Swedish krona", CHF: "Swiss franc", SYP: "Syrian pound", TZS: "Tanzanian shilling",
+      THB: "Thai baht", TND: "Tunisian dinar", TRY: "Turkish lira", TMT: "Turkmenistan manat",
+      UGX: "Ugandan shilling", UAH: "Ukrainian hryvnia", AED: "United Arab Emirates dirham",
+      UYU: "Uruguayan peso", UZS: "Uzbekistani so'm", VND: "Vietnamese đồng", YER: "Yemeni rial",
+      ZMW: "Zambian Kwacha"
+    };
+
+    const fromSelect = document.getElementById('from');
+    const toSelect = document.getElementById('to');
+    const resultDiv = document.getElementById('result');
+
+    Object.entries(currencies).forEach(([code, name]) => {
+      fromSelect.innerHTML += `<option value="${code}">${name} (${code})</option>`;
+      toSelect.innerHTML += `<option value="${code}">${name} (${code})</option>`;
+    });
+
+    fromSelect.value = "USD";
+    toSelect.value = "INR";
+
+    async function convert() {
+      const from = fromSelect.value;
+      const to = toSelect.value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      if (!amount) {
+        resultDiv.textContent = "Enter a valid amount.";
+        return;
+      }
+      resultDiv.textContent = "Converting...";
+      try {
+        const res = await fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${from.toLowerCase()}.json`);
+        const data = await res.json();
+        const rate = data[from.toLowerCase()][to.toLowerCase()];
+        if (!rate) throw new Error("Rate not found.");
+        const converted = amount * rate;
+        resultDiv.innerHTML = `${amount} ${from} = <strong>${converted.toFixed(2)} ${to}</strong><br><small>1 ${from} = ${rate.toFixed(4)} ${to}</small>`;
+      } catch (err) {
+        resultDiv.textContent = "⚠️ Error fetching data";
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
